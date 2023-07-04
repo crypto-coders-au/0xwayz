@@ -16,7 +16,7 @@ export default function Home() {
   const WLS = data;
 
   const [Message, setMSG] = useState(
-    <p className="sm:text-xl text-lg text-black">Paste Your Address</p>
+    <p className="sm:text-xl text-lg text-black">W00t the F00k is going on?</p>
   );
 
   const HandleCheck = (addr) => {
@@ -25,13 +25,13 @@ export default function Home() {
     });
     let useradd = addr.toLowerCase();
     if (loweracc.includes(useradd)) {
-      setMSG(<p className="sm:text-xl text-lg text-green-600">Whitelisted</p>);
+      setMSG(<p className="sm:text-xl text-lg text-green-600">W00tlisted 🎉</p>);
     } else {
       setMSG(
-        <p className="sm:text-xl text-lg text-red-500">Not Whitelisted</p>
+        <p className="sm:text-xl text-lg text-red-500">Not W00tlisted 😭</p>
       );
     }
-    if (String(addr).length < 42) {
+    if (!String(addr).startsWith("bc1p")) {
       setMSG(
         <p className="sm:text-xl text-lg text-blue-500">Not a valid address</p>
       );
