@@ -9,11 +9,27 @@ import useSWR from "swr";
 export default function Home() {
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
-  const { data, error } = useSWR(
-    "/Whitelist/Accounts.json",
+
+  const { data: ogData, error: ogError } = useSWR(
+    "/Whitelist/og.json",
     fetcher
   );
-  const WLS = data;
+
+  const { data: wl1Data, error: wl1Error } = useSWR(
+    "/Whitelist/wl.json",
+    fetcher
+  );
+
+  const { data: wl2Data, error: wl2Error } = useSWR(
+    "/Whitelist/og.json",
+    fetcher
+  );
+
+  var WLS = [];
+  
+  if (wl1Data && ogData && wl2Data) {
+    WLS = [...ogData, ...wl1Data, ...wl2Data];
+  }
 
   const [Message, setMSG] = useState(
     <p className="sm:text-xl text-lg text-black">W00t the F00k is going on?</p>
@@ -44,6 +60,8 @@ export default function Home() {
     }
   };
 
+  console.log(WLS.length)
+
   return (
     <div className='flex flex-col min-h-screen justify-center items-center bg-[url("/assets/bg.png")] bg-center bg-cover'>
       <Head>
@@ -58,6 +76,7 @@ export default function Home() {
           <input
             className="w-full text-black p-3 focus:outline-2 focus:outline-slate-400 caret-slate-500 rounded-md"
             type={"text"}
+            disabled={WLS.length === 0}
             placeholder={"Paste Your Address to check"}
             onChange={(e) => {
               e.preventDefault();
