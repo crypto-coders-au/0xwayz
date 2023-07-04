@@ -10,29 +10,58 @@ export default function Home() {
 
   const fetcher = (url) => fetch(url).then((res) => res.json());
 
-  const { data, error } = useSWR(
-    "/api/wallets",
+  const { data: ogData, error: ogError } = useSWR(
+    "/Whitelist/og.json",
     fetcher
   );
 
-  const WLS = data;
+  const { data: wl1Data, error: wl1Error } = useSWR(
+    "/Whitelist/wl.json",
+    fetcher
+  );
+
+  const { data: wl2Data, error: wl2Error } = useSWR(
+    "/Whitelist/wl2.json",
+    fetcher
+  );
+
+  var WLS = true;
+
+  if (wl1Data && ogData && wl2Data) {
+    WLS = false;
+  }
 
   const [Message, setMSG] = useState(
     <p className="sm:text-xl text-lg text-black">W00t the F00k is going on?</p>
   );
 
   const HandleCheck = (addr) => {
-    let loweracc = WLS.map((acc) => {
+    let ogWallets = ogData.map((acc) => {
       return acc.toLowerCase();
     });
+
+    let wl1Wallets = wl1Data.map((acc) => {
+      return acc.toLowerCase();
+    });
+
+    let wl2Wallets = wl2Data.map((acc) => {
+      return acc.toLowerCase();
+    });
+
     let useradd = addr.toLowerCase();
-    if (loweracc.includes(useradd)) {
-      setMSG(<p className="sm:text-xl text-lg text-green-600">W00tlisted 🎉</p>);
+
+    if (ogWallets.includes(useradd)) {
+      setMSG(<p className="sm:text-xl text-lg text-green-600">OG W00tlisted 🎉</p>);
+    } else if (wl1Wallets.includes(useradd)) {
+      setMSG(<p className="sm:text-xl text-lg text-green-600">WL1 W00tlisted 🎉</p>);
+    } else if (wl2Wallets.includes(useradd)) {
+      setMSG(<p className="sm:text-xl text-lg text-green-600">WL2 W00tlisted 🎉</p>);
     } else {
       setMSG(
         <p className="sm:text-xl text-lg text-red-500">Not W00tlisted 😭</p>
       );
     }
+
     if (!String(addr).startsWith("bc1p")) {
       setMSG(
         <p className="sm:text-xl text-lg text-blue-500">Not a valid address</p>
@@ -61,7 +90,7 @@ export default function Home() {
           <input
             className="w-full text-black p-3 focus:outline-2 focus:outline-slate-400 caret-slate-500 rounded-md"
             type={"text"}
-            disabled={!WLS}
+            disabled={WLS}
             placeholder={"Paste Your Address to check"}
             onChange={(e) => {
               e.preventDefault();
